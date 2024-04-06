@@ -2,48 +2,51 @@ import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../lib/hooks/auth';
 import styles from '../styles/app.module.css';
+import Link from "next/link";
 
 export default function Home() {
-    const router = useRouter();
-    const [loginError, setLoginError] = useState(null);
+  const router = useRouter();
+  const [loginError, setLoginError] = useState(null);
 
-    const { loading, loggedIn } = useAuth();
-    
-    if (loading) {
+  const { loading, loggedIn } = useAuth();
+
+  if (loading) {
     return <p>Loading...</p>;
-    }
+  }
 
-    if (!loading && loggedIn) {
-    router.push('/protected-route');
+  if (!loading && loggedIn) {
+    router.push("/protected-route");
     return null;
-    }
+  }
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        const { email, password } = event.target.elements;
-        setLoginError(null);
-        handleLogin(email.value, password.value)
-            .then(() => router.push('/protected-route'))
-            .catch((err) => setLoginError(err.message));
-    };
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const { email, password } = event.target.elements;
+    setLoginError(null);
+    handleLogin(email.value, password.value)
+      .then(() => router.push("/protected-route"))
+      .catch((err) => setLoginError(err.message));
+  };
 
-    return (
-        <div className={styles.container}>
-    <h1>Login</h1>
-    <form className={styles.form}
-        onSubmit={handleSubmit}>
-    <label htmlFor="email">Email</label>
-    <input type="email" id="email" />
-    <label htmlFor="password">Password</label>
-    <input type="password" id="password" />
-    <button type="submit">Login</button>
-        {loginError && (
-        <div className={styles.formError}>
-        {loginError} </div>
-        )}
+  return (
+    <>
+      <div className={styles.container}>
+        <h1>Data Catch Camp</h1>
+        <br />
+        <br />
+        <h1>Login</h1>
+        <form className={styles.form} onSubmit={handleSubmit}>
+          <label htmlFor="email">Email</label>
+          <input type="email" id="email" />
+          <label htmlFor="password">Password</label>
+          <input type="password" id="password" />
+          <button type="submit">Login</button>
+          <Link href="/forgotten"> Forgotten Password</Link>
+          {loginError && <div className={styles.formError}>{loginError} </div>}
         </form>
-    </div>
-    );
+      </div>
+    </>
+  );
 }
 async function handleLogin(email, password) {
     const resp = await fetch('/api/login', {
